@@ -7,9 +7,14 @@
       v-model="cep"
       placeholder="Digite o CEP"
       v-on:keyup.enter="getData()"
+      maxlength="9"
     />
     <button type="submit" @click="getData()">Procurar</button>
-
+    <div v-if="error">
+      <p>
+        O CEP <b>{{ error }}</b> não foi encontrado, tente novamente.
+      </p>
+    </div>
     <div v-if="infos">
       <p><b>Logradouro: </b> {{ infos.logradouro }}</p>
       <p><b> Complemento: </b> {{ infos.complemento }}</p>
@@ -28,16 +33,31 @@ export default {
   data() {
     return {
       cep: "",
-      infos: null
+      infos: null,
+      error: null
     };
+  },
+
+  watch: {
+    cep() {
+      this.cep = this.cep
+        .replace(/[^0-9]/g, "")
+        .replace(/^(\d{5})(\d{3})?/g, "$1-$2");
+    }
   },
 
   methods: {
     async getData() {
-      const response = await api.get(this.cep);
-      console.log(response.data);
-      this.infos = response.data;
-      this.cep = "";
+      try {
+        const response = await api.get(this.cep);
+        console.log(response);
+        this.infos = response.data;
+        this.cep = "";
+      } catch (err) {
+        this.error = this.cep;
+        this.infos = null;
+        this.cep = "";
+      }
     }
   }
 };
