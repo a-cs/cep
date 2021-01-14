@@ -9,6 +9,14 @@
       v-on:keyup.enter="getData()"
     />
     <button type="submit" @click="getData()">Procurar</button>
+
+    <div v-if="infos">
+      <p><b>Logradouro: </b> {{ infos.logradouro }}</p>
+      <p><b> Complemento: </b> {{ infos.complemento }}</p>
+      <p><b> Bairro: </b> {{ infos.bairro }}</p>
+      <p><b>Cidade: </b> {{ infos.cidade }}</p>
+      <p><b> Estado: </b> {{ infos.estado_info.nome }} ({{ infos.estado }})</p>
+    </div>
   </div>
 </template>
 
@@ -19,7 +27,8 @@ export default {
   name: "CEP",
   data() {
     return {
-      cep: ""
+      cep: "",
+      infos: null
     };
   },
 
@@ -27,6 +36,8 @@ export default {
     async getData() {
       const response = await api.get(this.cep);
       console.log(response.data);
+      this.infos = response.data;
+      this.cep = "";
     }
   }
 };
